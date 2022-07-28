@@ -16,7 +16,7 @@
         <tr>
             <td>{{this.name}}</td>
             <td>{{this.description}}</td>
-            <td>{{this.cost}}</td>
+            <td>{{divide this.cost 100}}</td>
             <td><a href='/products/{{this.id}}/update' class="btn btn-dark">update</a>
             <a href='/products/{{this.id}}/delete' class="btn btn-danger">delete</a></td>
         </tr>
