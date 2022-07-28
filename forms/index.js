@@ -3,6 +3,7 @@ const forms = require('forms');
 // create some shortcuts
 const fields = forms.fields;
 const validators = forms.validators;
+const widgets = forms.widgets;
 
 const bootstrapField = function (name, object) {
     if (!Array.isArray(object.widget.classes)) { object.widget.classes = []; }
@@ -25,7 +26,7 @@ const bootstrapField = function (name, object) {
 };
 
 //this function will return an instance of the create product form
-const createProductForm = () => {
+const createProductForm = (categories) => {
     // each key/value pair in the object represents one form control
     //errorAfterField -> show any validation errors after the field
     return forms.create({
@@ -41,6 +42,13 @@ const createProductForm = () => {
         description: fields.string({
             required: true,
             errorAfterField: true,
+        }),
+        category_id: fields.string({
+            label: 'Category',
+            required: true,
+            errorAfterField: true,
+            choices: categories, //each inner array represents one option, [1001, 'gluten free']
+            widget: widgets.select()
         })
     })
 }
