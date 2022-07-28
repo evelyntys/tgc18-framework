@@ -11,6 +11,9 @@ const Product = bookshelf.model('Product', {
     // singular because only can belong to one 
     category: function(){
         return this.belongsTo('Category');
+    },
+    tags: function(){
+        return this.belongsToMany('Tag')
     }
 })
 
@@ -25,4 +28,12 @@ const Category = bookshelf.model('Category', {
     }
 })
 
-module.exports = { Product, Category };
+const Tag = bookshelf.model('Tag', {
+    tableName: 'tags',
+    products: function(){
+        return this.hasMany('Product')
+    }
+
+})
+
+module.exports = { Product, Category, Tag };

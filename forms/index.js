@@ -26,7 +26,7 @@ const bootstrapField = function (name, object) {
 };
 
 //this function will return an instance of the create product form
-const createProductForm = (categories) => {
+const createProductForm = (categories, tags) => {
     // each key/value pair in the object represents one form control
     //errorAfterField -> show any validation errors after the field
     return forms.create({
@@ -49,6 +49,12 @@ const createProductForm = (categories) => {
             errorAfterField: true,
             choices: categories, //each inner array represents one option, [1001, 'gluten free']
             widget: widgets.select()
+        }),
+        tags: fields.string({
+            required: true,
+            errorAfterField: true,
+            widget: widgets.multipleSelect(),
+            choices: tags
         })
     })
 }
