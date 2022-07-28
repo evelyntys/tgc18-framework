@@ -1,11 +1,14 @@
 {{#extends 'base'}}
 {{#block 'content'}}
+<h1>products</h1>
+<a href="/products/create" class="btn btn-primary">new</a>
 <table class="table">
     <thead>
         <tr>
             <th>name</th>
             <th>description</th>
             <th>cost</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -14,6 +17,8 @@
             <td>{{this.name}}</td>
             <td>{{this.description}}</td>
             <td>{{this.cost}}</td>
+            <td><a href='/products/{{this.id}}/update' class="btn btn-dark">update</a>
+            <a href='/products/{{this.id}}/delete' class="btn btn-danger">delete</a></td>
         </tr>
         {{/each}}
     </tbody>

@@ -56,4 +56,85 @@ router.post('/create', function(req,res){
     });
 })
 
+// target url: /products/:product_id/update
+router.get('/:product_id/update', async function(req,res)
+{
+    // 1. get the product that is being updated
+    // select * from Product
+    // bookshelf ORM
+    const product = await Product.where({
+        'id': req.params.product_id
+    }).fetch({
+        require: true //if not found, will cause an exception (aka an error)
+    })
+    // 2. create the form to update the product
+    const productForm = createProductForm();
+    // 3. fill the form with the previous values of the product
+    productForm.fields.name.value = product.get('name');
+    productForm.fields.cost.value = product.get('cost');
+    productForm.fields.description.value = product.get('description');
+
+    res.render('products/update', {
+        form: productForm.toHTML(bootstrapField),
+        product: product.toJSON()
+    })
+})
+
+router.post('/:product_id/update', async function(req,res){
+    const productForm = createProductForm();
+    const product = await Product.where({
+        'id': req.params.product_id
+    }).fetch({
+        require: true //if not found, will cause an exception (aka an error)
+    })
+    // handle function will run the validation on the data
+    productForm.handle(req,{
+        success: async function(form){
+            // the form arguments contain whatever the user has typed into the form
+            // update products set name=?, cost=?, description=? where product_id=?
+            // product.set('name', form.data.name);
+            // product.set('description', form.data.description);
+            // product.set('cost', form.data.cost);
+
+            // for shortcut to work, all the keys in form.data object must be a column name in the table
+            product.set(form.data)
+            await product.save();
+            res.redirect('/products')
+        },
+        error: async function(form){
+            res.render('products/update', {
+                product: product.toJSON(),
+                form: form.toHTML(bootstrapField)
+            })
+        },
+        empty: async function(form){
+            res.render('products/update', {
+                product: product.toJSON(),
+                form: form.toHTML(bootstrapField)
+            })
+        }
+    })
+})
+
+router.get('/:product_id/delete', async function(req,res){
+    const product = await Product.where({
+        id: req.params.product_id
+    }).fetch({
+        require: true
+    })
+    res.render('products/delete', {
+        product: product.toJSON()
+    })
+})
+
+router.post('/:product_id/delete', async function(req,res){
+    const product = await Product.where({
+        id: req.params.product_id
+    }).fetch({
+        require: true
+    })
+    await product.destroy();
+    res.redirect('/products')
+})
+
 module.exports = router;
