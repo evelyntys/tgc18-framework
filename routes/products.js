@@ -34,7 +34,10 @@ router.get('/create', checkIfAuthenticated, async function(req,res){
     const productForm = createProductForm(categories, tags);
     res.render('products/create', {
         // get a html version of the form formatted using bootstrap
-        form: productForm.toHTML(bootstrapField)
+        form: productForm.toHTML(bootstrapField),
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 
@@ -66,7 +69,8 @@ router.post('/create', checkIfAuthenticated, async function(req,res){
             product.set('name', form.data.name);
             product.set('cost', form.data.cost);
             product.set('description', form.data.description);
-            product.set('category_id', form.data.category_id)
+            product.set('category_id', form.data.category_id);
+            product.set('image_url', form.data.image_url)
             // must remember to save
             await product.save()
             if (form.data.tags){

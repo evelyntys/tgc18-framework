@@ -56,3 +56,15 @@ pass on to next middleware and so on => if no more middleware, will pass to rout
 
 sessions only works for dynamic web app e.g. browsers, NOT FOR REACT APP
 API - jwt to login/logout
+
+{{!-- function e to prevent it from going back to the first page ('#') --}}
+
+ {{!-- add event listener to the upload button --}}
+    {{!-- need to have valid link for a tag for it to be rendered --}}
+
+            {{!-- callback function: will be called only when the widget finished uploading --}}
+  {{!-- display the widget --}}
+
+  {{!-- pass the parameter to sign to the cloudinary route in the query string --}}
+
+  {{!-- callback is given by cloudinary --}}

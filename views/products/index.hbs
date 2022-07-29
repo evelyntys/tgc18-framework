@@ -10,6 +10,7 @@
             <th>category</th>
             <th>cost</th>
             <th>tags</th>
+            <th>image</th>
             <th></th>
         </tr>
     </thead>
@@ -24,6 +25,9 @@
                 {{#each this.tags}}
                     <span class="badge bg-primary">{{this.name}}</span>
                 {{/each}}
+            </td>
+            <td>
+                <img src="{{this.image_url}}" style="height: 100px"/>
             </td>
             <td><a href='/products/{{this.id}}/update' class="btn btn-dark">update</a>
             <a href='/products/{{this.id}}/delete' class="btn btn-danger">delete</a></td>
