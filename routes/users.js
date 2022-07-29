@@ -2,6 +2,14 @@ const express = require('express');
 const { createUserForm, bootstrapField, createLoginForm } = require('../forms');
 const { User } = require('../models');
 const router = express.Router();
+const crypto = require('crypto');
+
+const getHashedPassword = (password) => {
+    const sha256 = crypto.createHash('sha256');
+    // output will be converted to hexdecimal (if not, will be too long, a very huge number)
+    const hash = sha256.update(password).digest('base64');
+    return hash;
+}
 
 router.get('/signup', async function(req,res){
     const userForm = createUserForm()
@@ -18,12 +26,13 @@ router.post('/signup', async function(req,res){
             // Model -> the table
             // an instance of the model -> one row 
             const user = new User();
-            user.set('username', form.data.username);
-            user.set('password', form.data.password);
-            user.set('email', form.data.email);
+            // user.set('username', form.data.username);
+            // user.set('password', form.data.password);
+            // user.set('email', form.data.email);
             // user.set(form.data); <= not so good in this case because form.data also contains the form.data.confirm_password field
-            // const {confirm_password, ...userData} = form.data;
-            // user.set(userData)
+            const {confirm_password, ...userData} = form.data;
+            userData.password = getHashedPassword(userData.password)
+            user.set(userData)
             await user.save();
             req.flash('success_messages', 'you have signed up successfully');
             res.redirect('/users/login')
@@ -56,7 +65,7 @@ router.post('/login', async function(req,res){
         success: async function(form){
             const user = await User.where({
                 email: form.data.email,
-                password: form.data.password
+                password: getHashedPassword(form.data.password)
             }).fetch({
                 require: false //if no result is found, then it will return null
             })
@@ -74,12 +83,6 @@ router.post('/login', async function(req,res){
                 req.flash('success_messages', 'welcome back, ' + user.get('username'));
                 res.redirect('/products')
             }
-        },
-        error: function(){
-
-        },
-        empty: function(){
-
         }
     })
 

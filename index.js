@@ -11,9 +11,16 @@ const session = require('express-session');
 const flash = require('connect-flash');
 // create a new session FileStore
 const FileStore = require('session-file-store')(session);
+// need sessions for csrf to work
+const csrf = require('csurf');
 
 const app = express();
 app.set('view engine', 'hbs');
+
+// app.use(urlencoded: )
+app.use(express.urlencoded({
+    extended: false
+}))
 
 //static folder
 app.use(express.static('public'))
@@ -29,6 +36,18 @@ app.use(session({
     resave: false, //do we automantically recreate the seesion even if there is no change to it
     saveUninitialized: true, //if a new browser connects, do we create a new session
 }))
+
+app.use(function(req,res,next){
+    console.log('req.body => ', req.body);
+    next()
+})
+
+app.use(csrf());
+app.use(function(req,res,next){
+    res.locals.csrfToken = req.csrfToken();
+     console.log(req.csrfToken())
+    next();
+})
 
 // register flash messages
 app.use(flash()); //IMPORTANT: register flash after sessions as flash needs sessions to work
@@ -53,15 +72,11 @@ app.use('/', landingRoutes)
 const productRoutes = require('./routes/products')
 app.use('/products', productRoutes)
 
-const userRoutes = require('./routes/users')
+const userRoutes = require('./routes/users');
+const { urlencoded } = require('express');
 app.use('/users', userRoutes)
 
 //enable forms
-app.use(
-    express.urlencoded({
-        extended: false
-    })
-)
 
 // async function main() {
 
