@@ -6,15 +6,14 @@ const { Product, Category, Tag } = require('../models');
 const { createProductForm, createSearchForm, bootstrapField } = require('../forms/index');
 const { checkIfAuthenticated } = require('../middlewares');
 
+const dataLayer = require('../dal/products')
+
 router.get('/', async function (req, res) {
-    const categories = await Category.fetchAll().map(
-        category => { return [category.get('id'), category.get('name')] }
-    )
-    const tags = await Tag.fetchAll().map(tag => {
-        return [tag.get('id'), tag.get('name')]
-    })
-    // inserts something at the start of the array
+    const categories = await dataLayer.getAllCategories();
     categories.unshift([0, '-----any category-----'])
+    
+    const tags = await dataLayer.getAllTags()
+    // inserts something at the start of the array
 
     //fetch all the products
     //use the bookshelf syntax
@@ -87,14 +86,9 @@ router.get('/', async function (req, res) {
 
 router.get('/create', checkIfAuthenticated, async function (req, res) {
     // fetch all the categories in the system
-    const categories = await Category.fetchAll().map(
-        category => { return [category.get('id'), category.get('name')] }
-    ) // fetchAll instead of fetch because want ALL the categories
+    const categories = await dataLayer.getAllCategories(); // fetchAll instead of fetch because want ALL the categories
 
-    const tags = await Tag.fetchAll().map(tag => {
-        return [tag.get('id'), tag.get('name')]
-    })
-
+    const tags = await dataLayer.getAllTags();
     // const c = [];
     // for (let c of (await Category.fetchAll())){
     //     c.push([c.get('id'), c.get('name')])
@@ -110,13 +104,9 @@ router.get('/create', checkIfAuthenticated, async function (req, res) {
 })
 
 router.post('/create', checkIfAuthenticated, async function (req, res) {
-    const tags = await Tag.fetchAll().map(tag => {
-        return [tag.get('id'), tag.get('name')]
-    })
+    const tags = await getAllTags();
     // fetch all the categories in the system
-    const categories = await Category.fetchAll().map(
-        category => { return [category.get('id'), category.get('name')] }
-    ) // fetchAll instead of fetch because want ALL the categories
+    const categories = await getAllCategories(); // fetchAll instead of fetch because want ALL the categories
 
     // const c = [];
     // for (let c of (await Category.fetchAll())){
@@ -167,19 +157,16 @@ router.get('/:product_id/update', async function (req, res) {
     // 1. get the product that is being updated
     // select * from Product
     // bookshelf ORM
-    const categories = await Category.fetchAll().map(
-        category => { return [category.get('id'), category.get('name')] }
-    )
-    const product = await Product.where({
-        'id': req.params.product_id
-    }).fetch({
-        withRelated: ['tags'],
-        require: true //if not found, will cause an exception (aka an error)
-    })
+    const categories = await dataLayer.getAllCategories()
+    const product = await dataLayer.getProductByID(req.params.product_id)
+    // Product.where({
+    //     'id': req.params.product_id
+    // }).fetch({
+    //     withRelated: ['tags'],
+    //     require: true //if not found, will cause an exception (aka an error)
+    // })
 
-    const tags = await (await Tag.fetchAll()).map(t => {
-        return [t.get('id'), t.get('name')]
-    })
+    const tags = await dataLayer.getAllTags();
     // 2. create the form to update the product
     const productForm = createProductForm(categories, tags);
     // 3. fill the form with the previous values of the product
@@ -207,12 +194,7 @@ router.get('/:product_id/update', async function (req, res) {
 
 router.post('/:product_id/update', async function (req, res) {
     const productForm = createProductForm();
-    const product = await Product.where({
-        'id': req.params.product_id
-    }).fetch({
-        withRelated: 'tags',
-        require: true //if not found, will cause an exception (aka an error)
-    })
+    const product = await dataLayer.getProductByID(req.params.product_id)
     // handle function will run the validation on the data
     productForm.handle(req, {
         success: async function (form) {
@@ -262,22 +244,14 @@ router.post('/:product_id/update', async function (req, res) {
 })
 
 router.get('/:product_id/delete', async function (req, res) {
-    const product = await Product.where({
-        id: req.params.product_id
-    }).fetch({
-        require: true
-    })
+    const product = await dataLayer.getProductByID(req.params.product_id)
     res.render('products/delete', {
         product: product.toJSON()
     })
 })
 
 router.post('/:product_id/delete', async function (req, res) {
-    const product = await Product.where({
-        id: req.params.product_id
-    }).fetch({
-        require: true
-    })
+    const product = await dataLayer.getProductByID(req.params.product_id)
     await product.destroy();
     res.redirect('/products')
 })
