@@ -39,15 +39,19 @@ app.use(session({
     saveUninitialized: true, //if a new browser connects, do we create a new session
 }))
 
-app.use(function (req, res, next) {
-    console.log('req.body => ', req.body);
-    next()
-})
+// app.use(function (req, res, next) {
+//     console.log('req.body => ', req.body);
+//     next()
+// })
+
+// app.use(function(req,res,next){
+//     res.locals.cloudinaryAPIKey = process.env.CLOUDINARY_API_KEY
+// })
 
 app.use(csrf());
 app.use(function (req, res, next) {
     res.locals.csrfToken = req.csrfToken();
-    console.log(req.csrfToken())
+    // console.log(req.csrfToken())
     next();
 })
 

@@ -98,5 +98,35 @@ const createLoginForm = function() {
     })
 }
 
+const createSearchForm = function(categories, tags){
+    return forms.create({
+        name: fields.string({
+            required: false,
+            errorAfterField: true
+        }),
+        min_cost: fields.number({
+            required: false,
+            errorAfterField: true,
+            validators: [validators.integer()]
+        }),
+        max_cost: fields.number({
+            required: false,
+            errorAfterField: true,
+            validators: [validators.integer()]
+        }),
+        category_id: fields.string({
+            required: false,
+            errorAfterField: true,
+            choices: categories,
+            widget: widgets.select()
+        }),
+        tags: fields.string({
+            required: false,
+            errorAfterField: true,
+            choices: tags,
+            widget: widgets.multipleSelect()
+        })
+    })
+}
 
-module.exports = { createProductForm, createUserForm, bootstrapField, createLoginForm }
+module.exports = { createProductForm, createUserForm, bootstrapField, createLoginForm, createSearchForm }
