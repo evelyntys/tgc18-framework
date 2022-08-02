@@ -256,4 +256,6 @@ router.post('/:product_id/delete', async function (req, res) {
     res.redirect('/products')
 })
 
+router.post(':/p')
+
 module.exports = router;

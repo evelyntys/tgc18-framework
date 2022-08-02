@@ -90,6 +90,9 @@ app.use('/cloudinary', cloudinaryRoutes)
 const cartRoutes = require('./routes/carts')
 app.use('/cart', checkIfAuthenticated, cartRoutes)
 
+const checkoutRoutes = require('./routes/checkout');
+app.use('/checkout', checkIfAuthenticated, checkoutRoutes)
+
 // async function main() {
 
 //     app.get('/', async function (req, res) {
