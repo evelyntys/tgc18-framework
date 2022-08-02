@@ -1,128 +1,111 @@
 const express = require('express');
-const hbs = require('hbs');
+const hbs = require('hbs')
 const wax = require('wax-on');
-require('dotenv').config();
 var helpers = require('handlebars-helpers')({
     handlebars: hbs.handlebars
-});
+  });
 
-require('dotenv').config();
-
-// const cartsDAL = require('./dal/carts')
-
-//   requiring in dependencies for sessions
+//requiring in the dependencies for sessions
 const session = require('express-session');
 const flash = require('connect-flash');
 // create a new session FileStore
 const FileStore = require('session-file-store')(session);
-// need sessions for csrf to work
+
+// csrf token
 const csrf = require('csurf');
-const { checkIfAuthenticated } = require('./middlewares/index')
+
+// enable env files
+require('dotenv').config();
 
 const app = express();
+
 app.set('view engine', 'hbs');
 
-// app.use(urlencoded: )
 app.use(express.urlencoded({
-    extended: false
+  extended: false
 }))
 
-//static folder
+// static folder
 app.use(express.static('public'))
 
-//setup wax-on
+// setup wax-on
 wax.on(hbs.handlebars);
-wax.setLayoutPath('./views/layouts');
+wax.setLayoutPath('./views/layouts')
 
-// set up sessions
+// setup sessions
 app.use(session({
-    store: new FileStore(), // use files to store sessions
-    secret: process.env.SESSION_SECRET, //used to generate the session id,
-    resave: false, //do we automantically recreate the seesion even if there is no change to it
-    saveUninitialized: true, //if a new browser connects, do we create a new session
+  store: new FileStore(),  // we want to use files to store sessions
+  secret: process.env.SESSION_SECRET, // used to generate the session id
+  resave: false, // do we automatically recreate the session even if there is no change to it
+  saveUninitialized: true, // if a new browser connects do we create a new session
 }))
 
-// app.use(function (req, res, next) {
-//     console.log('req.body => ', req.body);
-//     next()
-// })
-
-// app.use(function(req,res,next){
-//     res.locals.cloudinaryAPIKey = process.env.CLOUDINARY_API_KEY
-// })
-
-app.use(csrf());
-app.use(function (req, res, next) {
-    res.locals.csrfToken = req.csrfToken();
-    // console.log(req.csrfToken())
+// enable csrf protection
+// app.use(csrf());
+const csrfInstance = csrf();
+app.use(function(req,res,next){
+  // console.log("Checking for csrf exclusion");
+  if (req.url === '/checkout/process_payment') {
     next();
+  } else {
+    csrfInstance(req,res,next);
+  }
 })
 
-// register flash messages
-app.use(flash()); //IMPORTANT: register flash after sessions as flash needs sessions to work
+app.use(function(req,res,next){
+
+  // the csrfToken function is avaliable because of `app.use(csrf())`
+  // req.csrfToken will be a falsely value if it is not available
+  if (req.csrfToken) {
+    res.locals.csrfToken = req.csrfToken(); 
+  }
+
+  next();
+
+})
+
+// register Flash messages
+app.use(flash());  // VERY IMPORTANT: register flash after sessions
 
 // setup a middleware to inject the session data into the hbs files
-app.use(function (req, res, next) {
-    // res.locals will contain all the variables available to hbs files
-    res.locals.success_messages = req.flash('success_messages');
-    res.locals.error_messages = req.flash('error_messages');
-    next();
-    // RMB TO CALL NEXT FOR MIDDLEWARES
+app.use(function(req,res,next){
+  // res.locals will contain all the variables available to hbs files
+  res.locals.success_messages = req.flash('success_messages');
+  res.locals.error_messages = req.flash('error_messages');
+  next();
 })
 
-// set up middleware to share data across all hbs files
+// setup a middleware to share data across all hbs files
 app.use(function(req,res,next){
-    // whatever is placed in local response, is available in all hbs files
-    // have to ensure that this only happens after you enable sessions
-    res.locals.user = req.session.user;
-    next();
+  res.locals.user = req.session.user;
+  next();
 })
 
 app.use(async function(req,res,next){
-    if (req.session.user){
-        const cartItems = await getCart(req.session.user.id);
-        res.locals.cartCount = cartItems.toJSON().length;
-        next()
-    }
-})
+  if (req.session.user) {
+    const cartItems = await getCart(req.session.user.id);
+    res.locals.cartCount = cartItems.toJSON().length;
+  }
+  next();
+});
 
-// when get req, will match the routes one by one 
-// => match all in landingRoutes first, then change to productRoutes if cannot find
+const landingRoutes = require('./routes/landing');
+const productRoutes = require('./routes/products');
+const userRoutes = require('./routes/users')
+const cloudinaryRoutes = require('./routes/cloudinary');
+const cartRoutes = require('./routes/carts');
+const checkoutRoutes = require('./routes/checkout');
+const { checkIfAuthenticated } = require('./middlewares');
+const { getCart } = require('./dal/carts');
 
 // first arg is the prefix
-const landingRoutes = require('./routes/landing')
-// => router object is returned into landingRoutes
-app.use('/', landingRoutes)
+app.use('/', landingRoutes);
+app.use('/products', productRoutes);
+app.use('/users', userRoutes);
+app.use('/cloudinary', cloudinaryRoutes);
+app.use('/cart', [checkIfAuthenticated], cartRoutes);
+app.use('/checkout', checkoutRoutes);
 
-const productRoutes = require('./routes/products')
-app.use('/products', productRoutes)
-
-const userRoutes = require('./routes/users');
-const { urlencoded } = require('express');
-app.use('/users', userRoutes)
-
-const cloudinaryRoutes = require('./routes/cloudinary')
-app.use('/cloudinary', cloudinaryRoutes)
-//enable forms
-
-const cartRoutes = require('./routes/carts')
-app.use('/cart', checkIfAuthenticated, cartRoutes)
-
-const checkoutRoutes = require('./routes/checkout');
-const { getCart } = require('./dal/carts');
-app.use('/checkout', checkIfAuthenticated, checkoutRoutes)
-
-// async function main() {
-
-//     app.get('/', async function (req, res) {
-//         res.send('hello world')
-//     })
-
-// }
-
-// main();
-
-
-app.listen(3000, function () {
-    console.log('server started')
+app.listen(3000, function(){
+    console.log("Server has started");
 })
