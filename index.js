@@ -15,6 +15,7 @@ const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
 // need sessions for csrf to work
 const csrf = require('csurf');
+const { checkIfAuthenticated } = require('./middlewares/index')
 
 const app = express();
 app.set('view engine', 'hbs');
@@ -85,6 +86,9 @@ app.use('/users', userRoutes)
 const cloudinaryRoutes = require('./routes/cloudinary')
 app.use('/cloudinary', cloudinaryRoutes)
 //enable forms
+
+const cartRoutes = require('./routes/carts')
+app.use('/cart', checkIfAuthenticated, cartRoutes)
 
 // async function main() {
 

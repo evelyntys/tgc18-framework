@@ -8,8 +8,8 @@
 {{!-- whatever user types in will appear on the address bar --}}
 {{!-- u can bookmark the result but not for form method=POST --}}
 <form method="GET">
-{{{form}}}
-<input type="submit" class="btn btn-primary my-2" value="search"/>
+    {{{form}}}
+    <input type="submit" class="btn btn-primary my-2" value="search" />
 </form>
 
 <table class="table">
@@ -33,15 +33,18 @@
             <td>{{divide this.cost 100}}</td>
             <td>
                 {{#each this.tags}}
-                    <span class="badge bg-primary">{{this.name}}</span>
+                <span class="badge bg-primary">{{this.name}}</span>
                 {{/each}}
             </td>
             <td>
                 {{!-- usually people will use the thumbnail instead --}}
-                <img src="{{this.image_url}}" style="height: 100px"/>
+                <img src="{{this.image_url}}" style="height: 100px" />
             </td>
-            <td><a href='/products/{{this.id}}/update' class="btn btn-dark">update</a>
-            <a href='/products/{{this.id}}/delete' class="btn btn-danger">delete</a></td>
+            <td>
+                <a href='products/{{this.id}}/update' class="btn btn-dark">update</a>
+                <a href='products/{{this.id}}/delete' class="btn btn-danger">delete</a>
+                <a href='cart/{{this.id}}/add' class='btn btn-success'>add to cart</a>
+            </td>
         </tr>
         {{/each}}
     </tbody>
