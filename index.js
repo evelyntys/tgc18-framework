@@ -8,6 +8,8 @@ var helpers = require('handlebars-helpers')({
 
 require('dotenv').config();
 
+// const cartsDAL = require('./dal/carts')
+
 //   requiring in dependencies for sessions
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -68,6 +70,22 @@ app.use(function (req, res, next) {
     // RMB TO CALL NEXT FOR MIDDLEWARES
 })
 
+// set up middleware to share data across all hbs files
+app.use(function(req,res,next){
+    // whatever is placed in local response, is available in all hbs files
+    // have to ensure that this only happens after you enable sessions
+    res.locals.user = req.session.user;
+    next();
+})
+
+app.use(async function(req,res,next){
+    if (req.session.user){
+        const cartItems = await getCart(req.session.user.id);
+        res.locals.cartCount = cartItems.toJSON().length;
+        next()
+    }
+})
+
 // when get req, will match the routes one by one 
 // => match all in landingRoutes first, then change to productRoutes if cannot find
 
@@ -91,6 +109,7 @@ const cartRoutes = require('./routes/carts')
 app.use('/cart', checkIfAuthenticated, cartRoutes)
 
 const checkoutRoutes = require('./routes/checkout');
+const { getCart } = require('./dal/carts');
 app.use('/checkout', checkIfAuthenticated, checkoutRoutes)
 
 // async function main() {
@@ -102,6 +121,7 @@ app.use('/checkout', checkIfAuthenticated, checkoutRoutes)
 // }
 
 // main();
+
 
 app.listen(3000, function () {
     console.log('server started')

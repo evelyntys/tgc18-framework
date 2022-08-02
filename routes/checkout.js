@@ -40,8 +40,8 @@ let metaData = JSON.stringify(meta);
 const payment = {
     payment_method_types: ['card'],
     line_items: lineItems,
-    success_url: 'https://www.google.com',
-    cancel_url: 'https://www.yahoo.com',
+    success_url: process.env.STRIPE_SUCCESS_URL,
+    cancel_url: process.env.STRIPE_CANCEL_URL,
     // in the metadata, the keys are up to us
     // but the value must be a string
     metadata: {
@@ -58,6 +58,14 @@ res.render('checkout/checkout', {
     sessionId: stripeSession.id,
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY
 })
+})
+
+router.get('/success', function(req,res){
+    res.send('payment sucess')
+})
+
+router.get('/cancel', function(req,res){
+    res.send('payment cancelled')
 })
 
 module.exports = router;
