@@ -22,7 +22,7 @@ exports.up = function(db) {
   // the name of the foreign key should be that of the other table in singular form with _id at the back
   // third argument: the object that defines the column
   // when create foreign key, must ensure that it matches the data type of the corresponding primary key
-  db.addColumn('products', 'category_id', {
+  return db.addColumn('products', 'category_id', {
     type: 'int', 
     unsigned: true,
     notNull: true,
