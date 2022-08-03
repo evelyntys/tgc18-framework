@@ -121,6 +121,6 @@ app.use('/checkout', checkoutRoutes);
 app.use('/api/products', express.json(), api.products);
 app.use('/api/users', express.json(),  api.users)
 
-app.listen(3000, function(){
+app.listen(process.env.PORT, function(){
     console.log("Server has started");
 })
