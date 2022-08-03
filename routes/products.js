@@ -26,13 +26,16 @@ router.get('/', async function (req, res) {
 
     // create a query builder
     let query = Product.collection(); // => creates a query builder
-
+    let searchTerm = 'like';
+    if (process.env.DB_DRIVER == 'postgres'){
+        searchTerm = 'ilike'
+    }
     // search logic begins here
     searchForm.handle(req, {
         success: async function (form) {
             // if the user did provide the name
             if (form.data.name){
-                query.where('name', 'ilike', '%' + form.data.name + '%')
+                query.where('name', searchTerm, '%' + form.data.name + '%')
             }
 
             if (form.data.min_cost){
