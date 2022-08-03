@@ -5,6 +5,9 @@ var helpers = require('handlebars-helpers')({
     handlebars: hbs.handlebars
   });
 
+  // cors
+const cors = require('cors');
+
 //requiring in the dependencies for sessions
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -20,6 +23,9 @@ require('dotenv').config();
 const app = express();
 
 app.set('view engine', 'hbs');
+
+// enable cross-site origin resources sharing
+app.use(cors());
 
 app.use(express.urlencoded({
   extended: false
@@ -98,6 +104,10 @@ const checkoutRoutes = require('./routes/checkout');
 const { checkIfAuthenticated } = require('./middlewares');
 const { getCart } = require('./dal/carts');
 
+const api = {
+  products: require('./routes/api/products')
+}
+
 // first arg is the prefix
 app.use('/', landingRoutes);
 app.use('/products', productRoutes);
@@ -105,6 +115,9 @@ app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
 app.use('/cart', [checkIfAuthenticated], cartRoutes);
 app.use('/checkout', checkoutRoutes);
+
+// register api routes
+app.use('/api/products', api.products);
 
 app.listen(3000, function(){
     console.log("Server has started");

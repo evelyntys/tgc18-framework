@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get('/', async function(req,res){
     const cartItems = await cartServices.getCart(req.session.user.id);
+    console.log(cartItems.toJSON())
     res.render('cart/index', {
         cartItems: cartItems.toJSON()
     })
