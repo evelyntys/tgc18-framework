@@ -3,6 +3,7 @@
 <form method="POST">
     <h1>sign up</h1>
 {{{form}}}
+<input type="hidden" value="{{csrfToken}}" name="_csrf"/>
 <input type="submit" class="btn btn-primary mt-3" value="submit"/>
 </form>
 {{/block}}
