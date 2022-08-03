@@ -7,7 +7,7 @@ var helpers = require('handlebars-helpers')({
 
   // cors
 const cors = require('cors');
-
+const jwt = require('jsonwebtoken')
 //requiring in the dependencies for sessions
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -51,7 +51,7 @@ app.use(session({
 const csrfInstance = csrf();
 app.use(function(req,res,next){
   // console.log("Checking for csrf exclusion");
-  if (req.url === '/checkout/process_payment') {
+  if (req.url === '/checkout/process_payment' || req.url.slice(0,5) == '/api/') {
     next();
   } else {
     csrfInstance(req,res,next);
@@ -105,7 +105,8 @@ const { checkIfAuthenticated } = require('./middlewares');
 const { getCart } = require('./dal/carts');
 
 const api = {
-  products: require('./routes/api/products')
+  products: require('./routes/api/products'),
+  users: require('./routes/api/users')
 }
 
 // first arg is the prefix
@@ -117,7 +118,8 @@ app.use('/cart', [checkIfAuthenticated], cartRoutes);
 app.use('/checkout', checkoutRoutes);
 
 // register api routes
-app.use('/api/products', api.products);
+app.use('/api/products', express.json(), api.products);
+app.use('/api/users', express.json(),  api.users)
 
 app.listen(3000, function(){
     console.log("Server has started");
