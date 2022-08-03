@@ -32,7 +32,7 @@ router.get('/', async function (req, res) {
         success: async function (form) {
             // if the user did provide the name
             if (form.data.name){
-                query.where('name', 'like', '%' + form.data.name + '%')
+                query.where('name', 'ilike', '%' + form.data.name + '%')
             }
 
             if (form.data.min_cost){
@@ -104,9 +104,9 @@ router.get('/create', checkIfAuthenticated, async function (req, res) {
 })
 
 router.post('/create', checkIfAuthenticated, async function (req, res) {
-    const tags = await getAllTags();
+    const tags = await dataLayer.getAllTags();
     // fetch all the categories in the system
-    const categories = await getAllCategories(); // fetchAll instead of fetch because want ALL the categories
+    const categories = await dataLayer.getAllCategories(); // fetchAll instead of fetch because want ALL the categories
 
     // const c = [];
     // for (let c of (await Category.fetchAll())){
