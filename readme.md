@@ -37,3 +37,34 @@ typeorm
 
 cross-site scripting: people try to hack into your website by typing in html to your form
 always escape with double braces if we want to do html escaping {{}}
+
+have to run nodemon --ignore sessions because nodemon will restart server every time it detects a change
+=> meaning that if any files appear in sessions (e.g. new user detected resulting in a new sesssion),
+it will cause nodemon to restart server
+.gitignore since nothing to do with github and may contain sensitive information
+
+flash messages only work if you do a redirect
+'
+use new migration file to rename column, add colum etc instead of doing down 
+
+if browser never get success message from browser, it will keep retrying
+when it is successful, all the requests passses through and results in many users created
+
+middleware = chain of responsibility 
+everytime we have an app.use => middleware
+pass on to next middleware and so on => if no more middleware, will pass to route
+
+sessions only works for dynamic web app e.g. browsers, NOT FOR REACT APP
+API - jwt to login/logout
+
+{{!-- function e to prevent it from going back to the first page ('#') --}}
+
+ {{!-- add event listener to the upload button --}}
+    {{!-- need to have valid link for a tag for it to be rendered --}}
+
+            {{!-- callback function: will be called only when the widget finished uploading --}}
+  {{!-- display the widget --}}
+
+  {{!-- pass the parameter to sign to the cloudinary route in the query string --}}
+
+  {{!-- callback is given by cloudinary --}}

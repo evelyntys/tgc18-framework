@@ -3,6 +3,7 @@ const forms = require('forms');
 // create some shortcuts
 const fields = forms.fields;
 const validators = forms.validators;
+const widgets = forms.widgets;
 
 const bootstrapField = function (name, object) {
     if (!Array.isArray(object.widget.classes)) { object.widget.classes = []; }
@@ -25,7 +26,7 @@ const bootstrapField = function (name, object) {
 };
 
 //this function will return an instance of the create product form
-const createProductForm = () => {
+const createProductForm = (categories, tags) => {
     // each key/value pair in the object represents one form control
     //errorAfterField -> show any validation errors after the field
     return forms.create({
@@ -41,8 +42,91 @@ const createProductForm = () => {
         description: fields.string({
             required: true,
             errorAfterField: true,
+        }),
+        category_id: fields.string({
+            label: 'Category',
+            required: true,
+            errorAfterField: true,
+            choices: categories, //each inner array represents one option, [1001, 'gluten free']
+            widget: widgets.select()
+        }),
+        tags: fields.string({
+            required: true,
+            errorAfterField: true,
+            widget: widgets.multipleSelect(),
+            choices: tags
+        }),
+        image_url: fields.string({
+            widget: widgets.hidden()
         })
     })
 }
 
-module.exports = { createProductForm, bootstrapField }
+const createUserForm = function() {
+    return forms.create({
+        username: fields.string({
+            required: true,
+            errorAfterField: true
+        }),
+        email: fields.string({
+            required: true,
+            errorAfterField: true
+        }),
+        password: fields.password({
+            required: true,
+            errorAfterField: true
+        }),
+        confirm_password: fields.password({
+            required: true,
+            errorAfterField: true,
+            // ensure that the value for confirm_password matches that of the password field
+            validators: [validators.matchField('password')]
+        })
+    })
+}
+
+const createLoginForm = function() {
+    return forms.create({
+        email: fields.string({
+            required: true,
+            errorAfterField: true
+        }),
+        password: fields.password({
+            required: true,
+            errorAfterField: true
+        })
+    })
+}
+
+const createSearchForm = function(categories, tags){
+    return forms.create({
+        name: fields.string({
+            required: false,
+            errorAfterField: true
+        }),
+        min_cost: fields.number({
+            required: false,
+            errorAfterField: true,
+            validators: [validators.integer()]
+        }),
+        max_cost: fields.number({
+            required: false,
+            errorAfterField: true,
+            validators: [validators.integer()]
+        }),
+        category_id: fields.string({
+            required: false,
+            errorAfterField: true,
+            choices: categories,
+            widget: widgets.select()
+        }),
+        tags: fields.string({
+            required: false,
+            errorAfterField: true,
+            choices: tags,
+            widget: widgets.multipleSelect()
+        })
+    })
+}
+
+module.exports = { createProductForm, createUserForm, bootstrapField, createLoginForm, createSearchForm }

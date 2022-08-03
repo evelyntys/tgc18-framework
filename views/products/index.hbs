@@ -2,12 +2,25 @@
 {{#block 'content'}}
 <h1>products</h1>
 <a href="/products/create" class="btn btn-primary">new</a>
+
+<h2>search </h2>
+{{!-- just retrieving information from the server, not changing any data => method=GET --}}
+{{!-- whatever user types in will appear on the address bar --}}
+{{!-- u can bookmark the result but not for form method=POST --}}
+<form method="GET">
+    {{{form}}}
+    <input type="submit" class="btn btn-primary my-2" value="search" />
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>name</th>
             <th>description</th>
+            <th>category</th>
             <th>cost</th>
+            <th>tags</th>
+            <th>image</th>
             <th></th>
         </tr>
     </thead>
@@ -16,9 +29,22 @@
         <tr>
             <td>{{this.name}}</td>
             <td>{{this.description}}</td>
+            <td>{{this.category.name}}</td>
             <td>{{divide this.cost 100}}</td>
-            <td><a href='/products/{{this.id}}/update' class="btn btn-dark">update</a>
-            <a href='/products/{{this.id}}/delete' class="btn btn-danger">delete</a></td>
+            <td>
+                {{#each this.tags}}
+                <span class="badge bg-primary">{{this.name}}</span>
+                {{/each}}
+            </td>
+            <td>
+                {{!-- usually people will use the thumbnail instead --}}
+                <img src="{{this.image_url}}" style="height: 100px" />
+            </td>
+            <td>
+                <a href='products/{{this.id}}/update' class="btn btn-dark">update</a>
+                <a href='products/{{this.id}}/delete' class="btn btn-danger">delete</a>
+                <a href='cart/{{this.id}}/add' class='btn btn-success'>add to cart</a>
+            </td>
         </tr>
         {{/each}}
     </tbody>

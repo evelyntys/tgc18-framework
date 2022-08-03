@@ -1,20 +1,79 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Hello, world!</title>
-  </head>
-  <body>
-    <div class="container">
-        {{#block 'content'}}
-        {{/block}}
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+  <title>Hello, world!</title>
+
+  {{#block 'css'}}
+  {{/block}}
+</head>
+
+<body>
+  <div class="container">
+    <!-- A grey horizontal navbar that becomes vertical on small screens -->
+<nav class="navbar navbar-expand-sm bg-light">
+
+  <div class="container-fluid">
+    <!-- Links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/products">products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link 2</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link 3</a>
+      </li>
+    </ul>
+    <div>
+      {{#if user}}
+      Hi, {{user.username}}
+      <a href="/cart" class="btn btn-primary btn-sm">cart({{cartCount}})</a>
+      <a href="/users/logout" class="btn btn-danger btn-sm">logout</a>
+      {{else}}
+      Hi, guest
+      <a href="/users/login" class="btn btn-success btn-sm">login</a>
+      {{/if}}
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-  </body>
+  </div>
+
+</nav>
+    {{#if success_messages}}
+    {{#each success_messages}}
+    <div class="alert alert-success">
+      {{this}}
+    </div>
+    {{/each}}
+    {{/if}}
+
+    {{#if error_messages}}
+    {{#each error_messages}}
+    <div class="alert alert-danger">
+      {{this}}
+    </div>
+    {{/each}}
+    {{/if}}
+
+
+    {{#block 'content'}}
+    {{/block}}
+  </div>
+
+  {{#block 'js'}}
+
+  {{/block}}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+</body>
+
 </html>
